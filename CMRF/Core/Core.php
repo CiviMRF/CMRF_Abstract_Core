@@ -15,8 +15,6 @@ abstract class Core
   
   public abstract function getConnectionProfiles();
 
-  public abstract function getConnectionProfile($profile_name);
-
   public abstract function getDefaultProfile();
 
   public abstract function isReady();
@@ -48,6 +46,15 @@ abstract class Core
   protected abstract function storeSettings($settings);
 
 
+  public function getConnectionProfile($profile_name) {
+      $connection_profiles = $this->getConnectionProfiles();
+      if (isset($connection_profiles[$profile_name])) {
+        return $connection_profiles[$profile_name];
+      } else {
+        return NULL;
+      }
+    }
+
 
   public function createConnection($connector_id) {
     $connection_id = $this->generateURN("$connector_id");
@@ -56,10 +63,11 @@ abstract class Core
 
   public function registerConnector($connector_name, $profile = NULL) {
     // first, make sure the profile is o.k.
-    $profiles = $this->getConnectionProfiles();
     if ($profile === NULL) {
       $profile = $this->getDefaultProfile();
     }
+
+    $profiles = $this->getConnectionProfiles();
 
     if (!isset($profiles[$profile])) {
       throw new Exception("Invalid profile '$profile'.", 1);
@@ -93,7 +101,7 @@ abstract class Core
     $prefix = "urn:cmrf:" . $type;
     $new_id = NULL;
     do {
-      $connector_id = $prefix . substr(sha1(rand()), 25);
+      $new_id = $prefix . substr(sha1(rand()), 25);
     } while (isset($existing_key_map[$new_id]));
     return $new_id;
   }
