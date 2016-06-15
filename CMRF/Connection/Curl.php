@@ -53,7 +53,6 @@ class Curl extends Connection {
     curl_setopt($curl, CURLOPT_SSLVERSION,     1);
 
     $response = curl_exec($curl);
-    error_log(print_r($response,1));
     if (curl_error($curl)){
       $call->setStatus(Call::STATUS_FAILED, curl_error($curl));
       return NULL;

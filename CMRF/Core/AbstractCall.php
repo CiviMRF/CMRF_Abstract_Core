@@ -15,7 +15,7 @@ include_once('CMRF/Core/Call.php');
 
 abstract class AbstractCall implements CallInterface {
 
-  protected static $api_options  = array('limit', 'return', 'offset', 'sort', 'sequential');
+  protected static $api_options  = array('limit', 'offset', 'sort', 'sequential');
   protected static $cmrf_options = array('cache');
   protected static $protected    = array('action', 'entity');
 
@@ -75,7 +75,23 @@ abstract class AbstractCall implements CallInterface {
 
   public function getHash() {
     $request = $this->getRequest();
-    $this->normaliseArray($request);
+    self::normaliseArray($request);
+    return sha1(json_encode($request));
+  }
+
+  public static function getHashFromParams($entity, $action, $parameters, $options) {
+    $filtered_options = array();
+    foreach ($options as $key => $value) {
+      if (in_array($key, self::$api_options)) {
+        $filtered_options[$key] = $value;
+      }
+    }
+
+    $request = $parameters;
+    $request['options'] = $filtered_options;
+    $request['entity']  = $entity;
+    $request['action']  = $action;
+    self::normaliseArray($request);
     return sha1(json_encode($request));
   }
 
@@ -137,11 +153,11 @@ abstract class AbstractCall implements CallInterface {
     return $request;
   }
 
-  protected function normaliseArray(&$array) {
+  protected static function normaliseArray(&$array) {
     ksort($array);
     foreach($array as &$value) {
       if (is_array($value)) {
-        $this->normaliseArray($value);
+        self::normaliseArray($value);
       }
     }
   }

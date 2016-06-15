@@ -18,15 +18,14 @@ include_once('CMRF/Connection/Local.php');
 include_once('CMRF/Local/Call.php');
 
 
-class Core extends AbstractCore
-{
+class Core extends AbstractCore {
+
   public function isReady() {
     // ready if CiviCRM is in our namespace
     return function_exists('civicrm_api3');
   }
 
-
-  public function createCall($connector_id, $entity, $action, $parameters, $options = NULL, $callback = NULL) {
+  public function createCall($connector_id, $entity, $action, $parameters = array(), $options = array(), $callback = NULL) {
     $id = $this->generateURN("call:local");
     return new Call($connector_id, $id, $this, $entity, $action, $parameters, $options, $callback);
   }

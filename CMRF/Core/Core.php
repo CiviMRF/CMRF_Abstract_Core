@@ -50,13 +50,13 @@ abstract class Core {
 
 
   
-  public function executeCall(Call $call, $connector_identifier) {
-    $connection = $this->getConnection($connector_identifier);
+  public function executeCall(Call $call) {
+    $connection = $this->getConnection($call->getConnectorID());
     return $connection->executeCall($call);
   }
 
-  public function queueCall(Call $call, $connector_identifier) {
-    $connection = $this->getConnection($connector_identifier);
+  public function queueCall(Call $call) {
+    $connection = $this->getConnection($call->getConnectorID());
     $connection->queueCall($call);
   }
 
