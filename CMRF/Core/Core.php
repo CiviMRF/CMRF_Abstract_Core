@@ -8,57 +8,81 @@
 
 namespace CMRF\Core;
 
-abstract class Core
-{
+abstract class Core {
 
-  public abstract function createCall($entity, $action, $parameters, $options = NULL, $callback = NULL);
-  
+  protected abstract function getConnection($connector_id);
+
+  public abstract function createCall($connector_id, $entity, $action, $parameters, $options = NULL, $callback = NULL);
+
+  public abstract function getCall($call_id);
+
+  public abstract function findCall($options);
+
+
   public abstract function getConnectionProfiles();
 
   public abstract function getDefaultProfile();
 
-  public abstract function isReady();
-
-
-  abstract public function getCallStatus($call_id);
-
-  abstract public function getCall($call_id);
-
-  abstract public function findCall($options);
+  // public function getConnectionProfile($profile_name);
 
 
 
+  // public function registerConnector($connector_name, $profile = NULL)
 
-  protected abstract function _createConnection($connection_id, $connector_id);
-
-  protected abstract function storeConnectionProfiles($profiles);
+  // public function unregisterConnector($connector_identifier)
 
   protected abstract function getRegisteredConnectors();
 
   protected abstract function storeRegisteredConnectors($connectors);
-
-  protected abstract function getConnections();
-
-  protected abstract function storeConnections($connections);
 
   protected abstract function getSettings();
 
   protected abstract function storeSettings($settings);
 
 
-  public function getConnectionProfile($profile_name) {
-      $connection_profiles = $this->getConnectionProfiles();
-      if (isset($connection_profiles[$profile_name])) {
-        return $connection_profiles[$profile_name];
-      } else {
-        return NULL;
-      }
+
+  /**
+   * override if certain conditions need to be checked
+   */
+  public function isReady() {
+    return TRUE;
+  }
+
+
+  
+  public function executeCall(Call $call, $connector_identifier) {
+    $connection = $this->getConnection($connector_identifier);
+    return $connection->executeCall($call);
+  }
+
+  public function queueCall(Call $call, $connector_identifier) {
+    $connection = $this->getConnection($connector_identifier);
+    $connection->queueCall($call);
+  }
+
+  /**
+   * override for a more efficient implementation
+   */
+  public function getCallStatus($call_id) {
+    $call = $this->getCall($call_id);
+    return $call->getStatus();
+  }
+
+  public function getConnectionProfile($connector_id) {
+    // find connector
+    $connectors = $this->getRegisteredConnectors();
+    if (!isset($connectors[$connector_id])) {
+      throw new Exception("Unregistered connector '$connector_id'.", 1);
     }
 
-
-  public function createConnection($connector_id) {
-    $connection_id = $this->generateURN("$connector_id");
-    return $this->_createConnection($connection_id, $connector_id);
+    // get profile
+    $profile_name = $connectors[$connector_id]['profile'];
+    $connection_profiles = $this->getConnectionProfiles();
+    if (isset($connection_profiles[$profile_name])) {
+      return $connection_profiles[$profile_name];
+    } else {
+      return NULL;
+    }
   }
 
   public function registerConnector($connector_name, $profile = NULL) {

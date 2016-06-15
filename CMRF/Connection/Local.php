@@ -13,8 +13,16 @@ use CMRF\Core\Connection as Connection;
 
 include_once('CMRF/Core/Connection.php');
 
-class Local extends Connection
-{
+class Local extends Connection {
+
+  public function getType() {
+    return 'local';
+  }
+
+  public function isReady() {
+    return function_exists('civicrm_api3');
+  }
+
   /**
    * execute the given call synchroneously
    * 
@@ -29,17 +37,8 @@ class Local extends Connection
     } catch (Exception $e) {
       $call->setStatus(Call::STATUS_FAILED, $e->getMessage());
     }
-    $this->processReply($reply);
+    $call->setReply($reply);
     return $reply;
   }
-
-
-  /**
-   * queue call for asynchroneous execution
-   */
-  public function queueCall(Call $call) {
-    return $this->executeCall($call);
-  }
-
 }
 

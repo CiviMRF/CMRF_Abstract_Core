@@ -20,18 +20,29 @@ include_once('CMRF/Local/Call.php');
 
 class Core extends AbstractCore
 {
-  public function createCall($entity, $action, $parameters, $options = NULL, $callback = NULL) {
-    $id = $this->generateURN("local_call");
-    return new Call($id, $this, $entity, $action, $parameters, $options, $callback);
-  }
-  
-  public function _createConnection($connection_id, $connector_id) {
-    return new LocalConnection($connection_id, $this, $connector_id);
-  }
-
   public function isReady() {
     // ready if CiviCRM is in our namespace
     return function_exists('civicrm_api3');
+  }
+
+
+  public function createCall($connector_id, $entity, $action, $parameters, $options = NULL, $callback = NULL) {
+    $id = $this->generateURN("call:local");
+    return new Call($connector_id, $id, $this, $entity, $action, $parameters, $options, $callback);
+  }
+
+  public abstract function getCall($call_id) {
+    // TODO: implement
+    return NULL;
+  }
+
+  public abstract function findCall($options) {
+    // TODO: implement
+    return NULL;
+  }
+
+  public function getConnection($connector_id) {
+    return new LocalConnection($this);
   }
 
   public function getDefaultProfile() {
@@ -76,14 +87,6 @@ class Core extends AbstractCore
     $this->storeFile('registered_connectors.json', $connectors);
   }
 
-  protected function getConnections() {
-    $this->loadFile('connections.json');
-  }
-
-  protected function storeConnections($connections) {
-    $this->storeFile('connections.json', $connections);
-  }
-
   protected function getSettings() {
     $this->loadFile('settings.json');
   }
@@ -91,6 +94,8 @@ class Core extends AbstractCore
   protected function storeSettings($settings) {
     $this->storeFile('setting.json', $settings);
   }
+
+
 
 
 

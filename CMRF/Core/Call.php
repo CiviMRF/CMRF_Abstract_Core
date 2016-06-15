@@ -11,21 +11,24 @@ namespace CMRF\Core;
 
 Interface Call {
 
-  const STATUS_INIT    = 10;
-  const STATUS_WAITING = 20;
-  const STATUS_SENDING = 30;
-  const STATUS_DONE    = 40;
-  const STATUS_RETRY   = 50;
-  const STATUS_FAILED  = 60;
-
+  const STATUS_INIT    = 'INIT';
+  const STATUS_WAITING = 'WAIT';
+  const STATUS_SENDING = 'SEND';
+  const STATUS_DONE    = 'DONE';
+  const STATUS_RETRY   = 'RETRY';
+  const STATUS_FAILED  = 'FAIL';
 
   public function getID();
+
+  public function getConnectorID();
 
   public function getEntity();
 
   public function getAction();
 
   public function getParameters();
+
+  public function getRequest();
 
   public function getOptions();
 
@@ -35,10 +38,13 @@ Interface Call {
 
   public function setStatus($status, $error_message, $error_code);
 
-  public function setReply($data);
+  public function getReply();
+
+  public function setReply($data, $newstatus);
 
   public function getValues();
 
+  public function triggerCallback();
   
 }
 

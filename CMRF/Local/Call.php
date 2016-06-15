@@ -8,19 +8,17 @@
 
 namespace CMRF\Local;
 
-use CMRF\Core\Call as CallInterface;
+use CMRF\Core\Call         as CallInterface;
+use CMRF\Core\AbstractCall as AbstractCall;
 
-include_once('CMRF/Core/Call.php');
+include_once('CMRF/Core/AbstractCall.php');
 
-class Call implements CallInterface {
+class Call extends AbstractCall {
 
-  protected $id;
-  protected $core;
   protected $data;
 
-  public function __construct($id, $core, $entity, $action, $parameters, $options, $callback) {
-    $this->id   = $id;
-    $this->core = $core;
+  public function __construct($connector_id, $id, $core, $entity, $action, $parameters, $options, $callback) {
+    parent::__construct($core, $connector_id, $id);
     $this->data = array(
       'id'       => $id,
       'call'     => array(
@@ -37,12 +35,16 @@ class Call implements CallInterface {
       );
   }
 
-  public function setReply($data) {
-    $this->data['reply'] = $data;
+  public function getRequest() {
+    return $this->compileRequest();
   }
 
-  public function getID() {
-    return $this->id;
+  public function getReply() {
+    return $this->data['reply'];
+  }
+
+  public function setReply($data, $newstatus = CallInterface::STATUS_DONE) {
+    $this->data['reply'] = $data;
   }
 
   public function getEntity() {
@@ -69,11 +71,9 @@ class Call implements CallInterface {
     return $this->data['stats'];
   }
 
-  public function getValues() {
-    if (isset($this->data['reply']['values'])) {
-      return $this->data['reply']['values'];
-    } else {
-      return array();
+  public function triggerCallback() {
+    if (function_exists($this->data['callback'])) {
+      $this->data['callback']($this);
     }
   }
 

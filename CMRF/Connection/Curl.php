@@ -8,13 +8,22 @@
 
 namespace CMRF\Connection;
 
-use CMRF\Core\Call as Call;
+use CMRF\Core\Call       as Call;
 use CMRF\Core\Connection as Connection;
 
 include_once('CMRF/Core/Connection.php');
 
-class Curl extends Connection
-{
+class Curl extends Connection {
+
+  public function getType() {
+    return 'curl';
+  }
+
+  public function isReady() {
+    // TODO: check for CURL
+    return TRUE;
+  }
+
   /**
    * execute the given call synchroneously
    * 
@@ -24,16 +33,19 @@ class Curl extends Connection
     $profile               = $this->getProfile();
 
     $request               = $this->getAPI3Params($call);
-    $request['api_key']    = $profile['api_key'];
-    $request['key']        = $profile['site_key'];
-    $request['json']       = 1;
-    $request['version']    = 3;
-    $request['entity']     = $call->getEntity();
-    $request['action']     = $call->getAction();
+    // $request['api_key']    = $profile['api_key'];
+    // $request['key']        = $profile['site_key'];
+    // $request['version']    = 3;
+    // $request['entity']     = $call->getEntity();
+    // $request['action']     = $call->getAction();
+    $post_data = "entity=" . $call->getEntity();
+    $post_data .= "&action=" . $call->getAction();
+    $post_data .= "&api_key={$profile['api_key']}&key={$profile['site_key']}&version=3";
+    $post_data .= "&json=" . json_encode($request);
 
     $curl = curl_init();
     curl_setopt($curl, CURLOPT_POST,           1);
-    curl_setopt($curl, CURLOPT_POSTFIELDS,     $request);
+    curl_setopt($curl, CURLOPT_POSTFIELDS,     $post_data);
     curl_setopt($curl, CURLOPT_URL,            $profile['url']);
     curl_setopt($curl, CURLOPT_RETURNTRANSFER, 1);
     curl_setopt($curl, CURLOPT_SSL_VERIFYPEER, false);
@@ -41,14 +53,14 @@ class Curl extends Connection
     curl_setopt($curl, CURLOPT_SSLVERSION,     1);
 
     $response = curl_exec($curl);
-    
+    error_log(print_r($response,1));
     if (curl_error($curl)){
-      $call->setStatus(Connection::STATUS_FAILED, curl_error($curl));
+      $call->setStatus(Call::STATUS_FAILED, curl_error($curl));
       return NULL;
     } else {
       $reply = json_decode($response, true);
       if ($reply===NULL) {
-        $call->setStatus(Connection::STATUS_FAILED, curl_error($curl));
+        $call->setStatus(Call::STATUS_FAILED, curl_error($curl));
         return NULL;
       } else {
         $call->setReply($reply);
@@ -56,13 +68,4 @@ class Curl extends Connection
       }
     }
   }
-
-
-  /**
-   * queue call for asynchroneous execution
-   */
-  public function queueCall(Call $call) {
-    return $this->executeCall($call);
-  }
-
 }
