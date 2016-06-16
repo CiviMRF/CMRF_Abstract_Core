@@ -51,13 +51,28 @@ abstract class Core {
 
   
   public function executeCall(Call $call) {
-    $connection = $this->getConnection($call->getConnectorID());
-    return $connection->executeCall($call);
+    if ($call->getStatus() == Call::STATUS_DONE) {
+      // this seems to be cached
+      return $call;
+    } else {
+      $connection = $this->getConnection($call->getConnectorID());
+      return $connection->executeCall($call);      
+    }
   }
 
   public function queueCall(Call $call) {
-    $connection = $this->getConnection($call->getConnectorID());
-    $connection->queueCall($call);
+    if ($call->getStatus() == Call::STATUS_DONE) {
+      // this seems to be cached
+      $this->performCallback($call);
+    } else {
+      $connection = $this->getConnection($call->getConnectorID());
+      $connection->queueCall($call);
+    }
+  }
+
+  public function performCallback($call) {
+    // TODO: implement
+    throw new Exception("Callback system not yet implemented", 1);
   }
 
   /**
