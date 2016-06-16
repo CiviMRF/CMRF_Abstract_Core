@@ -72,7 +72,7 @@ abstract class Core {
 
   public function performCallback($call) {
     // TODO: implement
-    throw new Exception("Callback system not yet implemented", 1);
+    throw new \Exception("Callback system not yet implemented", 1);
   }
 
   /**
@@ -87,7 +87,7 @@ abstract class Core {
     // find connector
     $connectors = $this->getRegisteredConnectors();
     if (!isset($connectors[$connector_id])) {
-      throw new Exception("Unregistered connector '$connector_id'.", 1);
+      throw new \Exception("Unregistered connector '$connector_id'.", 1);
     }
 
     // get profile
@@ -109,7 +109,7 @@ abstract class Core {
     $profiles = $this->getConnectionProfiles();
 
     if (!isset($profiles[$profile])) {
-      throw new Exception("Invalid profile '$profile'.", 1);
+      throw new \Exception("Invalid profile '$profile'.", 1);
     }
 
 

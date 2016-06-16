@@ -34,7 +34,7 @@ class Local extends Connection {
         $call->getEntity(),
         $call->getAction(),
         $this->getAPI3Params($call));      
-    } catch (Exception $e) {
+    } catch (\Exception $e) {
       $call->setStatus(Call::STATUS_FAILED, $e->getMessage());
     }
     $call->setReply($reply);
