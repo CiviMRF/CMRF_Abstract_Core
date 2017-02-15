@@ -41,7 +41,7 @@ class Curl extends Connection {
     $post_data = "entity=" . $call->getEntity();
     $post_data .= "&action=" . $call->getAction();
     $post_data .= "&api_key={$profile['api_key']}&key={$profile['site_key']}&version=3";
-    $post_data .= "&json=" . json_encode($request);
+    $post_data .= "&json=" . urlencode(json_encode($request));
 
     $curl = curl_init();
     curl_setopt($curl, CURLOPT_POST,           1);
