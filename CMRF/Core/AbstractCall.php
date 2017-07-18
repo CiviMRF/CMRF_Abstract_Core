@@ -22,6 +22,8 @@ abstract class AbstractCall implements CallInterface {
   protected $id           = NULL;
   protected $core         = NULL;
   protected $connector_id = NULL;
+  /** @var \CMRF\PersistenceLayer\CallFactory */
+  protected $factory      = NULL;
 
   public function __construct($core, $connector_id, $factory,$id=NULL) {
     $this->factory      = $factory;
