@@ -10,8 +10,6 @@ namespace CMRF\Core;
 
 use CMRF\Core\Call as CallInterface;
 
-include_once('CMRF/Core/Call.php');
-
 
 abstract class AbstractCall implements CallInterface {
 
