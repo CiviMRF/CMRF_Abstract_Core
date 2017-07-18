@@ -10,8 +10,6 @@ namespace CMRF\Core;
 
 use CMRF\Core\Call as CallInterface;
 
-include_once('CMRF/Core/Call.php');
-
 
 abstract class AbstractCall implements CallInterface {
 
@@ -124,7 +122,7 @@ abstract class AbstractCall implements CallInterface {
     $request = $parameters;
     $request['entity'] = $this->getEntity();
     $request['action'] = $this->getAction();
-   
+
     $all_options = $options;
     $request['options'] = array();
     foreach ($all_options as $key => $value) {
