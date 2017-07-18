@@ -128,11 +128,11 @@ class SQLPersistingCallFactory extends CallFactory {
       VALUES (?     ,?           ,?      ,?       ,?           ,?          )");
     $stmt->bind_param("ssssss",$call->getStatus(),$call->getConnectorID(),json_encode($call->getRequest(),$call->getHash(),date('YmdHis')));
     $stmt->execute();
-    $call->cid=$this->connection->insert_id;
+    $call->record->cid=$this->connection->insert_id;
   }
 
   public function update(\CMRF\Core\Call $call) {
-    if(!isset($call->cid)) {
+    if(!isset($call->record->cid)) {
       throw new \Exception("Unpersisted call given out to update. This won't work.");
     }
     else {
@@ -141,7 +141,7 @@ class SQLPersistingCallFactory extends CallFactory {
       if(isset($call->getOptions()['cache'])) {
         $cache_date=date('YmdHis',strtotime("now + "+$call->getOptions()['cache']));
       }
-      $stmt->bind_param("ssssii",$call->getStatus(),json_encode($call->getReply()),$call->getReplyDate()->format("YmdHis"),$cache_date,$call->getRetryCount());
+      $stmt->bind_param("ssssii",$call->getStatus(),json_encode($call->getReply()),$call->getReplyDate()->format("YmdHis"),$cache_date,$call->getRetryCount(),$call->record->cid);
       $stmt->execute();
     }
 
