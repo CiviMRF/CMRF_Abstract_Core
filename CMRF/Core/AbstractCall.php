@@ -95,6 +95,27 @@ abstract class AbstractCall implements CallInterface {
     return sha1(json_encode($request));
   }
 
+  /** @return \DateTime */
+  public function getReplyDate()
+  {
+    return $this->reply_date;
+  }
+
+  public function setReplyDate(\DateTime $date)
+  {
+    $this->reply_date=$date;
+  }
+
+  public function getRetryCount()
+  {
+    return $this->retry_count;
+  }
+
+  public function setRetryCount($count)
+  {
+    $this->retry_count=$count;
+  }
+
 
   protected function compileRequest($parameters, $options) {
     $request = $parameters;
