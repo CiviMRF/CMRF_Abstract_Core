@@ -45,6 +45,16 @@ Interface Call {
   public function getValues();
 
   public function triggerCallback();
-  
+
+  public function getHash();
+
+  /** @return \DateTime */
+  public function getReplyDate();
+
+  public function setReplyDate(\DateTime $date);
+
+  public function getRetryCount();
+
+  public function setRetryCount($count);
 }
 
