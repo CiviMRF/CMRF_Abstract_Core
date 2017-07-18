@@ -129,6 +129,7 @@ class SQLPersistingCallFactory extends CallFactory {
     $stmt->bind_param("ssssss",$call->getStatus(),$call->getConnectorID(),json_encode($call->getRequest(),$call->getHash(),date('YmdHis')));
     $stmt->execute();
     $call->record->cid=$this->connection->insert_id;
+    $call->id=$call->record->cid;
   }
 
   public function update(\CMRF\Core\Call $call) {

@@ -23,7 +23,8 @@ abstract class AbstractCall implements CallInterface {
   protected $core         = NULL;
   protected $connector_id = NULL;
 
-  public function __construct($core, $connector_id, $id=NULL) {
+  public function __construct($core, $connector_id, $factory,$id=NULL) {
+    $this->factory      = $factory;
     $this->core         = $core;
     $this->connector_id = $connector_id;
     $this->id           = $id;

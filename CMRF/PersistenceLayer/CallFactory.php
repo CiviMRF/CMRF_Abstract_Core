@@ -20,11 +20,11 @@ class CallFactory {
   }
 
   protected function call_construct($connector_id, $core, $entity, $action, $parameters, $options, $callback) {
-    return call_user_func($this->delegated_constructor,array($connector_id,$core,$entity,$action,$parameters,$options,$callback));
+    return call_user_func($this->delegated_constructor,array($connector_id,$core,$entity,$action,$parameters,$options,$callback,$this));
   }
 
   protected function call_load($connector_id,$core,$record) {
-    return call_user_func($this->delegated_loader,array($connector_id,$core,$record));
+    return call_user_func($this->delegated_loader,array($connector_id,$core,$record,$this));
   }
 
   /** @return \CMRF\Core\Call */
