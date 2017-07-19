@@ -152,7 +152,10 @@ class SQLPersistingCallFactory extends CallFactory {
       }
       $status=$call->getStatus();
       $reply=\GuzzleHttp\json_encode($call->getReply());
-      $date=$call->getReplyDate()->format('YmdHis');
+      $date = NULL;
+      if($call->getReplyDate() != NULL) {
+        $date=$call->getReplyDate()->format('YmdHis');
+      }
       $retrycount=$call->getRetryCount();
       $id=$call->record['cid'];
       $stmt->bind_param("ssssii",$status,$reply,$date,$cache_date,$retrycount,$id);
