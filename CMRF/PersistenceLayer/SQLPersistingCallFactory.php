@@ -126,7 +126,12 @@ class SQLPersistingCallFactory extends CallFactory {
     $stmt = $this->connection->prepare("insert into {$this->table_name} 
              (status,connector_id,request,metadata,request_hash,create_date)
       VALUES (?     ,?           ,?      ,?       ,?           ,?          )");
-    $stmt->bind_param("ssssss",$call->getStatus(),$call->getConnectorID(),json_encode($call->getRequest(),$call->getHash(),date('YmdHis')));
+    $status = $call->getStatus();
+    $connectorID=$call->getConnectorID();
+    $request=json_encode($call->getRequest());
+    $hash=$call->getHash();
+    $date=date('YmdHis');
+    $stmt->bind_param("ssssss",$status,$connectorID,$request,$hash,$date);
     $stmt->execute();
     $call->record->cid=$this->connection->insert_id;
     $call->id=$call->record->cid;
@@ -142,7 +147,12 @@ class SQLPersistingCallFactory extends CallFactory {
       if(isset($call->getOptions()['cache'])) {
         $cache_date=date('YmdHis',strtotime("now + "+$call->getOptions()['cache']));
       }
-      $stmt->bind_param("ssssii",$call->getStatus(),json_encode($call->getReply()),$call->getReplyDate()->format("YmdHis"),$cache_date,$call->getRetryCount(),$call->record->cid);
+      $status=$call->getStatus();
+      $reply=\GuzzleHttp\json_encode($call->getReply());
+      $date=$call->getReplyDate()->format('YmdHis');
+      $retrycount=$call->getRetryCount();
+      $id=$call->record->cid;
+      $stmt->bind_param("ssssii",$status,$reply,$date,$cache_date,$retrycount,$id);
       $stmt->execute();
     }
 
