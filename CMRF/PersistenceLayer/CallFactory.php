@@ -35,4 +35,8 @@ class CallFactory {
   public function update(\CMRF\Core\Call $call) {
     //basic implementation does not handle persistence.
   }
+
+  public function purgeCachedCalls() {
+    //basic implementation does not handle persistence. No problem here.
+  }
 }

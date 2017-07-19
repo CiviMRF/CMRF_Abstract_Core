@@ -148,5 +148,9 @@ class SQLPersistingCallFactory extends CallFactory {
 
   }
 
+  public function purgeCachedCalls() {
+    $stmt = $this->connection->query("delete from {$this->table_name} where status = 'DONE' and (cached_until < NOW() or cached_until is NULL)");
+  }
+
 
 }
