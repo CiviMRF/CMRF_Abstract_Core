@@ -11,8 +11,6 @@ namespace CMRF\Connection;
 use CMRF\Core\Call       as Call;
 use CMRF\Core\Connection as Connection;
 
-include_once('CMRF/Core/Connection.php');
-
 class Curl extends Connection {
 
   public function getType() {
