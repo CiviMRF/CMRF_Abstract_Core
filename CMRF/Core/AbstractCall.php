@@ -20,8 +20,11 @@ abstract class AbstractCall implements CallInterface {
   protected $id           = NULL;
   protected $core         = NULL;
   protected $connector_id = NULL;
+  /** @var \CMRF\PersistenceLayer\CallFactory */
+  protected $factory      = NULL;
 
-  public function __construct($core, $connector_id, $id=NULL) {
+  public function __construct($core, $connector_id, $factory,$id=NULL) {
+    $this->factory      = $factory;
     $this->core         = $core;
     $this->connector_id = $connector_id;
     $this->id           = $id;
@@ -93,12 +96,33 @@ abstract class AbstractCall implements CallInterface {
     return sha1(json_encode($request));
   }
 
+  /** @return \DateTime */
+  public function getReplyDate()
+  {
+    return $this->reply_date;
+  }
+
+  public function setReplyDate(\DateTime $date)
+  {
+    $this->reply_date=$date;
+  }
+
+  public function getRetryCount()
+  {
+    return $this->retry_count;
+  }
+
+  public function setRetryCount($count)
+  {
+    $this->retry_count=$count;
+  }
+
 
   protected function compileRequest($parameters, $options) {
     $request = $parameters;
     $request['entity'] = $this->getEntity();
     $request['action'] = $this->getAction();
-   
+
     $all_options = $options;
     $request['options'] = array();
     foreach ($all_options as $key => $value) {

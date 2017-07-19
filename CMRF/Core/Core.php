@@ -8,15 +8,32 @@
 
 namespace CMRF\Core;
 
+use \CMRF\PersistenceLayer\CallFactory;
+
 abstract class Core {
+
+  /** @var CallFactory */
+  protected  $callfactory;
 
   protected abstract function getConnection($connector_id);
 
-  public abstract function createCall($connector_id, $entity, $action, $parameters, $options = NULL, $callback = NULL);
+  public function createCall($connector_id, $entity, $action, $parameters, $options = NULL, $callback = NULL) {
+    return $this->callfactory->createOrFetch($connector_id,$this,$entity,$action,$parameters,$options,$callback);
+  }
 
-  public abstract function getCall($call_id);
+  public function __construct(CallFactory $factory) {
+    //TODO: implement connection factory to support multiple connection types with a single core implementation.
+    $this->callfactory=$factory;
+  }
 
-  public abstract function findCall($options);
+  public function getCall($call_id) {
+    return $this->callfactory->loadCall($call_id,$this);
+  }
+
+  public function findCall($options) {
+    //TODO: not yet implemented, as options is not yet known.
+    return $this->callfactory->findCall($options,$this);
+  }
 
 
   public abstract function getConnectionProfiles();
@@ -49,14 +66,14 @@ abstract class Core {
   }
 
 
-  
+
   public function executeCall(Call $call) {
     if ($call->getStatus() == Call::STATUS_DONE) {
       // this seems to be cached
       return $call;
     } else {
       $connection = $this->getConnection($call->getConnectorID());
-      return $connection->executeCall($call);      
+      return $connection->executeCall($call);
     }
   }
 
