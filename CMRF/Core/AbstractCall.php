@@ -18,6 +18,8 @@ abstract class AbstractCall implements CallInterface {
   protected static $protected    = array('action', 'entity');
 
   public $id           = NULL;
+  protected $reply_date = NULL;
+  protected $retry_count = 0;
   protected $core         = NULL;
   protected $connector_id = NULL;
   /** @var \CMRF\PersistenceLayer\CallFactory */
