@@ -15,6 +15,11 @@ abstract class Core {
   /** @var CallFactory */
   protected  $callfactory;
 
+  /** @return CallFactory */
+  public function getFactory() {
+    return $this->callfactory;
+  }
+
   protected abstract function getConnection($connector_id);
 
   public function createCall($connector_id, $entity, $action, $parameters, $options = NULL, $callback = NULL) {
