@@ -26,9 +26,14 @@ abstract class Core {
     $this->callfactory=$factory;
   }
 
-  public abstract function getCall($call_id);
+  public function getCall($call_id) {
+    return $this->callfactory->loadCall($call_id,$this);
+  }
 
-  public abstract function findCall($options);
+  public function findCall($options) {
+    //TODO: not yet implemented, as options is not yet known.
+    return $this->callfactory->findCall($options,$this);
+  }
 
 
   public abstract function getConnectionProfiles();
@@ -61,14 +66,14 @@ abstract class Core {
   }
 
 
-  
+
   public function executeCall(Call $call) {
     if ($call->getStatus() == Call::STATUS_DONE) {
       // this seems to be cached
       return $call;
     } else {
       $connection = $this->getConnection($call->getConnectorID());
-      return $connection->executeCall($call);      
+      return $connection->executeCall($call);
     }
   }
 

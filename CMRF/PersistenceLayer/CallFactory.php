@@ -39,4 +39,12 @@ class CallFactory {
   public function purgeCachedCalls() {
     //basic implementation does not handle persistence. No problem here.
   }
+
+  public function loadCall($call_id,$core) {
+    return null;
+  }
+
+  public function findCall($options,$core) {
+    return null;
+  }
 }
