@@ -136,6 +136,8 @@ class SQLPersistingCallFactory extends CallFactory {
     $stmt->execute();
     $call->record['cid']=$this->connection->insert_id;
     $call->id=$call->record['cid'];
+
+    return $call;
   }
 
   public function update(\CMRF\Core\Call $call) {
