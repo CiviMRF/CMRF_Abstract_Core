@@ -114,27 +114,18 @@ abstract class Core {
 
     // get profile
     $profile_name = $connectors[$connector_id]['profile'];
+    if (empty($profile_name)) {
+      $profile_name = $this->getDefaultProfile();
+    }
     $connection_profiles = $this->getConnectionProfiles();
     if (isset($connection_profiles[$profile_name])) {
       return $connection_profiles[$profile_name];
     } else {
-      return NULL;
+      throw new \Exception("Invalid profile '$profile_name'.", 1);
     }
   }
 
   public function registerConnector($connector_name, $profile = NULL) {
-    // first, make sure the profile is o.k.
-    if ($profile === NULL) {
-      $profile = $this->getDefaultProfile();
-    }
-
-    $profiles = $this->getConnectionProfiles();
-
-    if (!isset($profiles[$profile])) {
-      throw new \Exception("Invalid profile '$profile'.", 1);
-    }
-
-
     // find a new ID for the connector
     $connectors   = $this->getRegisteredConnectors();
     $connector_id = $this->generateURN("connector:$connector_name", $connectors);
