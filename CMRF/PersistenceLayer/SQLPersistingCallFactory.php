@@ -129,9 +129,10 @@ class SQLPersistingCallFactory extends CallFactory {
     $status = $call->getStatus();
     $connectorID=$call->getConnectorID();
     $request=json_encode($call->getRequest());
+    $metadata='{}';
     $hash=$call->getHash();
     $date=date('YmdHis');
-    $stmt->bind_param("ssssss",$status,$connectorID,$request,$hash,$date);
+    $stmt->bind_param("ssssss",$status,$connectorID,$request,$metadata,$hash,$date);
     $stmt->execute();
     $call->record->cid=$this->connection->insert_id;
     $call->id=$call->record->cid;
