@@ -17,7 +17,7 @@ abstract class AbstractCall implements CallInterface {
   protected static $cmrf_options = array('cache');
   protected static $protected    = array('action', 'entity');
 
-  protected $id           = NULL;
+  public $id           = NULL;
   protected $core         = NULL;
   protected $connector_id = NULL;
   /** @var \CMRF\PersistenceLayer\CallFactory */
