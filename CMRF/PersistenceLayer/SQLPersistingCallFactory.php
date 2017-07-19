@@ -140,7 +140,8 @@ class SQLPersistingCallFactory extends CallFactory {
   }
 
   public function update(\CMRF\Core\Call $call) {
-    if(!isset($call->getID())) {
+    $id=$call->getID();
+    if(empty($id)) {
       throw new \Exception("Unpersisted call given out to update. This won't work.");
     }
     else {
@@ -156,7 +157,6 @@ class SQLPersistingCallFactory extends CallFactory {
         $date=$call->getReplyDate()->format('YmdHis');
       }
       $retrycount=$call->getRetryCount();
-      $id=$call->getID();
       $stmt->bind_param("ssssii",$status,$reply,$date,$cache_date,$retrycount,$id);
       $stmt->execute();
     }
