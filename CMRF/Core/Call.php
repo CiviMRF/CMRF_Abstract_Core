@@ -20,6 +20,8 @@ Interface Call {
 
   public function getID();
 
+  public function setID($id);
+
   public function getConnectorID();
 
   public function getEntity();
@@ -56,5 +58,6 @@ Interface Call {
   public function getRetryCount();
 
   public function setRetryCount($count);
+
 }
 

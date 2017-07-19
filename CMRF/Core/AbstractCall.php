@@ -17,7 +17,7 @@ abstract class AbstractCall implements CallInterface {
   protected static $cmrf_options = array('cache');
   protected static $protected    = array('action', 'entity');
 
-  public $id           = NULL;
+  protected $id           = NULL;
   protected $reply_date = NULL;
   protected $retry_count = 0;
   protected $core         = NULL;
@@ -57,6 +57,10 @@ abstract class AbstractCall implements CallInterface {
 
   public function getID() {
     return $this->id;
+  }
+
+  public function setID($id) {
+    $this->id = $id;
   }
 
   public function getCore() {

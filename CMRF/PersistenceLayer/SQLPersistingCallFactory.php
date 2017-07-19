@@ -134,8 +134,7 @@ class SQLPersistingCallFactory extends CallFactory {
     $date=date('YmdHis');
     $stmt->bind_param("ssssss",$status,$connectorID,$request,$metadata,$hash,$date);
     $stmt->execute();
-    $call->record['cid']=$this->connection->insert_id;
-    $call->id=$call->record['cid'];
+    $call->setID($this->connection->insert_id);
 
     return $call;
   }
