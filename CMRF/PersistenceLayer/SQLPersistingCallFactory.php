@@ -151,7 +151,7 @@ class SQLPersistingCallFactory extends CallFactory {
         $cache_date=date('YmdHis',strtotime("now + "+$call->getOptions()['cache']));
       }
       $status=$call->getStatus();
-      $reply=\GuzzleHttp\json_encode($call->getReply());
+      $reply=json_encode($call->getReply());
       $date = NULL;
       if($call->getReplyDate() != NULL) {
         $date=$call->getReplyDate()->format('YmdHis');
