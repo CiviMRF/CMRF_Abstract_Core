@@ -135,7 +135,7 @@ class SQLPersistingCallFactory extends CallFactory {
     $status = $call->getStatus();
     $connectorID=$call->getConnectorID();
     $request=json_encode($call->getRequest());
-    $metadata='{}';
+    $metadata=json_encode($call->getMetadata());
     $hash=$call->getHash();
     $date=date('Y-m-d H:i:s');
     $scheduled_date = NULL;
@@ -189,7 +189,11 @@ class SQLPersistingCallFactory extends CallFactory {
    */
   public function getQueuedCallIds() {
     $call_ids = array();
-    $result = $this->connection->query("select cid from {$this->table_name} where status = 'INIT' and (scheduled_date < NOW() or scheduled_date is NULL) ORDER BY scheduled_date ASC");
+    $result = $this->connection->query("
+      select cid from {$this->table_name} 
+      where (status = 'INIT' OR status = 'RETRY') 
+      and (DATE(scheduled_date) < NOW() or scheduled_date is NULL) 
+      ORDER BY scheduled_date ASC");
     if ($result) {
       while ($dataset = $result->fetch_object()) {
         $call_ids[] = $dataset->cid;

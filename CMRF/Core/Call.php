@@ -43,7 +43,7 @@ Interface Call {
    */
   public function getCachedUntil();
 
-  public function getStats();
+  public function getMetadata();
 
   public function setStatus($status, $error_message, $error_code);
 

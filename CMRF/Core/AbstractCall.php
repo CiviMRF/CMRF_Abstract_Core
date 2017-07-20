@@ -21,6 +21,7 @@ abstract class AbstractCall implements CallInterface {
   protected $reply_date = NULL;
   protected $scheduled_date = NULL;
   protected $retry_count = 0;
+  /** @var \CMRF\Core\Core */
   protected $core         = NULL;
   protected $connector_id = NULL;
   /** @var \CMRF\PersistenceLayer\CallFactory */
@@ -52,7 +53,7 @@ abstract class AbstractCall implements CallInterface {
    */
   abstract public function getCachedUntil();
 
-  abstract public function getStats();
+  abstract public function getMetadata();
 
   abstract public function setStatus($status, $error_message, $error_code);
 
