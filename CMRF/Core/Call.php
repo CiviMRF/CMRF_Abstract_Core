@@ -67,6 +67,11 @@ Interface Call {
 
   public function setScheduledDate(\DateTime $date);
 
+  /** @return \DateTime */
+  public function getDate();
+
+  public function setDate(\DateTime $date);
+
   public function getRetryCount();
 
   public function setRetryCount($count);

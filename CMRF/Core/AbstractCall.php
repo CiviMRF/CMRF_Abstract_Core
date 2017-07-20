@@ -20,6 +20,8 @@ abstract class AbstractCall implements CallInterface {
   protected $id           = NULL;
   protected $reply_date = NULL;
   protected $scheduled_date = NULL;
+  /** @var \DateTime  */
+  protected $date = NULL;
   protected $retry_count = 0;
   /** @var \CMRF\Core\Core */
   protected $core         = NULL;
@@ -32,6 +34,7 @@ abstract class AbstractCall implements CallInterface {
     $this->core         = $core;
     $this->connector_id = $connector_id;
     $this->id           = $id;
+    $this->date = new \DateTime();
   }
 
   abstract public function getEntity();
@@ -129,6 +132,15 @@ abstract class AbstractCall implements CallInterface {
 
   public function setScheduledDate(\DateTime $date) {
     $this->scheduled_date = $date;
+  }
+
+  /** @return \DateTime */
+  public function getDate() {
+    return $this->date;
+  }
+
+  public function setDate(\DateTime $date) {
+    $this->date = $date;
   }
 
   public function getRetryCount()
