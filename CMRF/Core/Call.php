@@ -36,6 +36,13 @@ Interface Call {
 
   public function getStatus();
 
+  /**
+   * Returns the date and time when the call should be processed.
+   *
+   * @return \DateTime|null
+   */
+  public function getCachedUntil();
+
   public function getStats();
 
   public function setStatus($status, $error_message, $error_code);
@@ -54,6 +61,11 @@ Interface Call {
   public function getReplyDate();
 
   public function setReplyDate(\DateTime $date);
+
+  /** @return \DateTime */
+  public function getScheduledDate();
+
+  public function setScheduledDate(\DateTime $date);
 
   public function getRetryCount();
 

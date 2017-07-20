@@ -45,8 +45,7 @@ abstract class Connection {
 
   public function queueCall(Call $call) {
     // TODO: override if async calls are possible
-    $this->executeCall();
-    $call->triggerCallback();
+    $this->executeCall($call);
   }
 
 }

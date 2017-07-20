@@ -69,6 +69,12 @@ class SQLPersistingCallFactory extends CallFactory {
           'not null' => TRUE,
           'description' => 'Creation timestamp of this call',
         ),
+        'scheduled_date' => array(
+          'type' => NULL,
+          'mysql_type' => 'timestamp',
+          'not null' => FALSE,
+          'description' => 'Scheduted timestamp of this call',
+        ),
         'reply_date' => array(
           'type' => NULL,
           'mysql_type' => 'timestamp',
@@ -124,15 +130,19 @@ class SQLPersistingCallFactory extends CallFactory {
     /** @var \CMRF\Core\Call $call */
     $call=$this->call_construct($connector_id,$core,$entity,$action,$parameters,$options,$callback);
     $stmt = $this->connection->prepare("insert into {$this->table_name} 
-             (status,connector_id,request,metadata,request_hash,create_date)
-      VALUES (?     ,?           ,?      ,?       ,?           ,?          )");
+             (status,connector_id,request,metadata,request_hash,create_date, scheduled_date)
+      VALUES (?     ,?           ,?      ,?       ,?           ,?           , ?)");
     $status = $call->getStatus();
     $connectorID=$call->getConnectorID();
     $request=json_encode($call->getRequest());
     $metadata='{}';
     $hash=$call->getHash();
-    $date=date('YmdHis');
-    $stmt->bind_param("ssssss",$status,$connectorID,$request,$metadata,$hash,$date);
+    $date=date('Y-m-d H:i:s');
+    $scheduled_date = NULL;
+    if($call->getScheduledDate() != NULL) {
+      $scheduled_date=$call->getScheduledDate()->format('Y-m-d H:i:s');
+    }
+    $stmt->bind_param("sssssss",$status,$connectorID,$request,$metadata,$hash,$date, $scheduled_date);
     $stmt->execute();
     $call->setID($this->connection->insert_id);
 
@@ -145,19 +155,23 @@ class SQLPersistingCallFactory extends CallFactory {
       throw new \Exception("Unpersisted call given out to update. This won't work.");
     }
     else {
-      $stmt = $this->connection->prepare("update {$this->table_name} set status=?,reply=?,reply_date=?,cached_until=?,retry_count=? where cid=?");
-      $cache_date="19700101000000";
-      if(isset($call->getOptions()['cache'])) {
-        $cache_date=date('YmdHis',strtotime("now + "+$call->getOptions()['cache']));
+      $stmt = $this->connection->prepare("update {$this->table_name} set status=?,reply=?,reply_date=?,scheduled_date=?,cached_until=?,retry_count=? where cid=?");
+      $cache_date=null;
+      if ($call->getCachedUntil()) {
+        $cache_date=$call->getCachedUntil()->format('Y-m-d H:i:s');
       }
       $status=$call->getStatus();
       $reply=json_encode($call->getReply());
-      $date = NULL;
+      $reply_date = NULL;
       if($call->getReplyDate() != NULL) {
-        $date=$call->getReplyDate()->format('YmdHis');
+        $reply_date=$call->getReplyDate()->format('Y-m-d H:i:s');
+      }
+      $scheduled_date = NULL;
+      if($call->getScheduledDate() != NULL) {
+        $scheduled_date=$call->getScheduledDate()->format('Y-m-d H:i:s');
       }
       $retrycount=$call->getRetryCount();
-      $stmt->bind_param("ssssii",$status,$reply,$date,$cache_date,$retrycount,$id);
+      $stmt->bind_param("sssssii",$status,$reply,$reply_date,$scheduled_date,$cache_date,$retrycount,$id);
       $stmt->execute();
     }
 
@@ -165,6 +179,23 @@ class SQLPersistingCallFactory extends CallFactory {
 
   public function purgeCachedCalls() {
     $stmt = $this->connection->query("delete from {$this->table_name} where status = 'DONE' and (cached_until < NOW() or cached_until is NULL)");
+  }
+
+  /**
+   * Returns the queued calls which are ready for processing.
+   *
+   * @return array
+   *   The array consists of the call ids
+   */
+  public function getQueuedCallIds() {
+    $call_ids = array();
+    $result = $this->connection->query("select cid from {$this->table_name} where status = 'INIT' and (scheduled_date < NOW() or scheduled_date is NULL) ORDER BY scheduled_date ASC");
+    if ($result) {
+      while ($dataset = $result->fetch_object()) {
+        $call_ids[] = $dataset->cid;
+      }
+    }
+    return $call_ids;
   }
 
   public function loadCall($call_id,$core) {

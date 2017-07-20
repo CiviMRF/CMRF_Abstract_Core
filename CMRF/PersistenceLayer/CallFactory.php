@@ -40,6 +40,17 @@ class CallFactory {
     //basic implementation does not handle persistence. No problem here.
   }
 
+  /**
+   * Returns the queued calls which are ready for processing.
+   *
+   * @return array
+   *   The array consists of the call ids
+   */
+  public function getQueuedCallIds() {
+    // basic implementation does not handle persistence. No problem here.
+    return array();
+  }
+
   public function loadCall($call_id,$core) {
     return null;
   }

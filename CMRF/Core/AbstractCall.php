@@ -19,6 +19,7 @@ abstract class AbstractCall implements CallInterface {
 
   protected $id           = NULL;
   protected $reply_date = NULL;
+  protected $scheduled_date = NULL;
   protected $retry_count = 0;
   protected $core         = NULL;
   protected $connector_id = NULL;
@@ -43,6 +44,13 @@ abstract class AbstractCall implements CallInterface {
   abstract public function getOptions();
 
   abstract public function getStatus();
+
+  /**
+   * Returns the date and time when the call should be processed.
+   *
+   * @return \DateTime|null
+   */
+  abstract public function getCachedUntil();
 
   abstract public function getStats();
 
@@ -111,6 +119,15 @@ abstract class AbstractCall implements CallInterface {
   public function setReplyDate(\DateTime $date)
   {
     $this->reply_date=$date;
+  }
+
+  /** @return \DateTime */
+  public function getScheduledDate() {
+    return $this->scheduled_date;
+  }
+
+  public function setScheduledDate(\DateTime $date) {
+    $this->scheduled_date = $date;
   }
 
   public function getRetryCount()
