@@ -34,6 +34,7 @@ class Local extends Connection {
         $this->getAPI3Params($call));      
     } catch (\Exception $e) {
       $call->setStatus(Call::STATUS_FAILED, $e->getMessage());
+      return $call->getReply();
     }
 
     // Hack from CiviCRM core to make the reply behave similar as the remote API.
