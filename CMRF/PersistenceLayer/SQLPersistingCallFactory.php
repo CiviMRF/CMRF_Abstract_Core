@@ -13,6 +13,11 @@ use CMRF\Core\AbstractCall;
 use mysqli;
 
 class SQLPersistingCallFactory extends CallFactory {
+  
+  /** @var mysqli */
+  protected $connection;
+  /** @var string */
+  protected $table_name;
 
   static function schema() {
     return array(
@@ -102,11 +107,6 @@ class SQLPersistingCallFactory extends CallFactory {
       'primary key' => array('cid'),
     );
   }
-
-  /** @var mysqli */
-  private $connection;
-  /** @var string */
-  private $table_name;
 
   public function __construct(mysqli $sql_connection, $table_name, callable $constructor, callable $loader) {
     parent::__construct($constructor, $loader);
