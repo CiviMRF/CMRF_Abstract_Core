@@ -13,7 +13,7 @@ use CMRF\Core\Call as CallInterface;
 
 abstract class AbstractCall implements CallInterface {
 
-  protected static $api_options  = array('limit', 'offset', 'sort', 'sequential');
+  protected static $api_options  = array('limit', 'offset', 'sort');
   protected static $cmrf_options = array('cache');
   protected static $protected    = array('action', 'entity');
 
