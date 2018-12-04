@@ -29,6 +29,12 @@ abstract class AbstractCall implements CallInterface {
   /** @var \CMRF\PersistenceLayer\CallFactory */
   protected $factory      = NULL;
 
+  /**
+   * @var array
+   *  Array with callback functions
+   */
+  protected $callbacks = array();
+
   public function __construct($core, $connector_id, $factory,$id=NULL) {
     $this->factory      = $factory;
     $this->core         = $core;
@@ -151,6 +157,19 @@ abstract class AbstractCall implements CallInterface {
   public function setRetryCount($count)
   {
     $this->retry_count=$count;
+  }
+
+  /**
+   * Executes the callback functions
+   *
+   * @return Execute callbacks
+   */
+  public function executeCallbacks() {
+    foreach($this->callbacks as $callback) {
+      if (is_callable($callback)) {
+        call_user_func($callback, $this);
+      }
+    }
   }
 
 

@@ -78,7 +78,9 @@ abstract class Core {
       return $call;
     } else {
       $connection = $this->getConnection($call->getConnectorID());
-      return $connection->executeCall($call);
+      $reply = $connection->executeCall($call);
+      $call->executeCallbacks();
+      return $reply;
     }
   }
 
@@ -90,11 +92,6 @@ abstract class Core {
       $connection = $this->getConnection($call->getConnectorID());
       $connection->queueCall($call);
     }
-  }
-
-  public function performCallback($call) {
-    // TODO: implement
-    throw new \Exception("Callback system not yet implemented", 1);
   }
 
   /**

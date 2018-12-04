@@ -60,7 +60,11 @@ class Curl extends Connection {
         $call->setStatus(Call::STATUS_FAILED, curl_error($curl));
         return NULL;
       } else {
-        $call->setReply($reply);
+        $status = Call::STATUS_DONE;
+        if (isset($reply['is_error']) && $reply['is_error']) {
+          $status = Call::STATUS_FAILED;
+        }
+        $call->setReply($reply, $status);
         return $reply;
       }
     }

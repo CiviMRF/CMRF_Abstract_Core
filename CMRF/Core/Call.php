@@ -76,5 +76,12 @@ Interface Call {
 
   public function setRetryCount($count);
 
+  /**
+   * Executes the callback functions
+   *
+   * @return Execute callbacks
+   */
+  public function executeCallbacks();
+
 }
 
