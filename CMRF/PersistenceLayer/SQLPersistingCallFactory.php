@@ -142,8 +142,11 @@ class SQLPersistingCallFactory extends CallFactory {
     if($call->getScheduledDate() != NULL) {
       $scheduled_date=$call->getScheduledDate()->format('Y-m-d H:i:s');
     }
-    $stmt->bind_param("sssssss",$status,$connectorID,$request,$metadata,$hash,$date, $scheduled_date);
+    $stmt->bind_param("ssbssss",$status,$connectorID,$request,$metadata,$hash,$date, $scheduled_date);
     $stmt->execute();
+    if ($stmt->errno) {
+      throw new \Exception($stmt->error);
+    }
     $call->setID($this->connection->insert_id);
 
     return $call;
