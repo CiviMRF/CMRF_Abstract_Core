@@ -45,15 +45,17 @@ class SQLPersistingCallFactory extends CallFactory {
         ),
         'request' => array(
           'description' => 'The request data sent',
-          'type' => 'long text',
+          'type' => 'text',
+          'size' => 'big',
           'serialize' => FALSE,
           'not null' => TRUE,
         ),
         'reply' => array(
           'description' => 'The reply data received',
-          'type' => 'long text',
+          'type' => 'text',
+          'size' => 'big',
           'serialize' => FALSE,
-          'not null' => FALSE,
+          'not null' => TRUE,
         ),
         'metadata' => array(
           'description' => 'Custom metadata on the request',
