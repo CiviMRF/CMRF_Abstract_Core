@@ -45,13 +45,13 @@ class SQLPersistingCallFactory extends CallFactory {
         ),
         'request' => array(
           'description' => 'The request data sent',
-          'type' => 'text',
+          'type' => 'long text',
           'serialize' => FALSE,
           'not null' => TRUE,
         ),
         'reply' => array(
           'description' => 'The reply data received',
-          'type' => 'text',
+          'type' => 'long text',
           'serialize' => FALSE,
           'not null' => FALSE,
         ),
@@ -142,7 +142,7 @@ class SQLPersistingCallFactory extends CallFactory {
     if($call->getScheduledDate() != NULL) {
       $scheduled_date=$call->getScheduledDate()->format('Y-m-d H:i:s');
     }
-    $stmt->bind_param("ssbssss",$status,$connectorID,$request,$metadata,$hash,$date, $scheduled_date);
+    $stmt->bind_param("sssssss",$status,$connectorID,$request,$metadata,$hash,$date, $scheduled_date);
     $stmt->execute();
     if ($stmt->errno) {
       throw new \Exception($stmt->error);
