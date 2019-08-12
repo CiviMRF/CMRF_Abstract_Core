@@ -119,10 +119,12 @@ class SQLPersistingCallFactory extends CallFactory {
   /** @return \CMRF\Core\Call */
   public function createOrFetch($connector_id, $core, $entity, $action, $parameters, $options, $callback) {
     if(!empty($options['cache'])) {
+      $today = new \DateTime();
       $hash = AbstractCall::getHashFromParams($entity,$action,$parameters,$options);
-      $stmt=$this->connection->prepare("select * from {$this->table_name} where request_hash = ? and connector_id = ? and cached_until > NOW() limit 1");
-      $stmt->bind_param("ss",$hash,$connector_id);
+      $stmt=$this->connection->prepare("select * from {$this->table_name} where request_hash = ? and connector_id = ? and cached_until > ? limit 1");
+      $stmt->bind_param("sss",$hash,$connector_id, $today->format('Y-m-d H:i:s'));
       $stmt->execute();
+
       $result=$stmt->get_result();
       $dataset=$result->fetch_object();
       if($dataset != NULL) {
