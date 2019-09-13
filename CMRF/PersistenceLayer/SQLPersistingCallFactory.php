@@ -55,7 +55,7 @@ class SQLPersistingCallFactory extends CallFactory {
           'type' => 'text',
           'size' => 'big',
           'serialize' => FALSE,
-          'not null' => TRUE,
+          'not null' => FALSE,
         ),
         'metadata' => array(
           'description' => 'Custom metadata on the request',
