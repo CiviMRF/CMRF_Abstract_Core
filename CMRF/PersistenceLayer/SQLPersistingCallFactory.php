@@ -48,7 +48,7 @@ class SQLPersistingCallFactory extends CallFactory {
           'type' => 'text',
           'size' => 'big',
           'serialize' => FALSE,
-          'not null' => TRUE,
+          'not null' => FALSE,
         ),
         'reply' => array(
           'description' => 'The reply data received',
