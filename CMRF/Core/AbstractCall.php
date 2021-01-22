@@ -175,8 +175,6 @@ abstract class AbstractCall implements CallInterface {
 
   protected function compileRequest($parameters, $options) {
     $request = $parameters;
-    $request['entity'] = $this->getEntity();
-    $request['action'] = $this->getAction();
 
     $all_options = $options;
     $request['options'] = array();
