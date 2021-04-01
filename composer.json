@@ -1,5 +1,5 @@
 {
-    "name": "CiviMRF/CMRF_Abstract_Core",
+    "name": "civimrf/cmrf_abstract_core",
     "autoload": {
         "psr-0" : {
             "CMRF" : ""
