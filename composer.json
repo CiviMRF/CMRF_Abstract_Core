@@ -1,5 +1,8 @@
 {
     "name": "civimrf/cmrf_abstract_core",
+    "description": "Abstract implementation for the the CMRF Core. Should be included into the concrete module implementation",
+    "homepage": "https://github.com/CiviMRF/CMRF_Abstract_Core",
+    "license": "AGPL-3.0",
     "autoload": {
         "psr-0" : {
             "CMRF" : ""
