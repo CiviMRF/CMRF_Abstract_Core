@@ -2,7 +2,7 @@
     "name": "CiviMRF/CMRF_Abstract_Core",
     "autoload": {
         "psr-0" : {
-            "CMRF" : "CMRF"
+            "CMRF" : ""
         }
     }
 }
