@@ -1,4 +1,4 @@
-You can find the general documentation at
+You can find the general documentation at https://github.com/CiviMRF/documentation.
 
 ### The CurlAuthX connector
 In the latest versions of CiviCRM, the endpoint `https://my-civi.org/sites/all/modules/civicrm/extern/rest.php` is not supported anymore. It is replaced by a new extension `AuthX` that provides a lot of different authentication options. The CurlAuthX connector uses just one of them.
