@@ -2,6 +2,8 @@
 
 /**
  * Remote CiviCRM connection based on CURL
+ * Uses the new CiviCRM auth extension. Authentication
+ * is done with X-Civi-Auth em X-Civi-Key headers
  *
  * @author Björn Endres, SYSTOPIA (endres@systopia.de)
  */
@@ -11,10 +13,10 @@ namespace CMRF\Connection;
 use CMRF\Core\Call       as Call;
 use CMRF\Core\Connection as Connection;
 
-class AjaxCurl extends Connection {
+class CurlAuthX extends Connection {
 
   public function getType() {
-    return 'ajaxcurl';
+    return 'curlauthx';
   }
 
   public function isReady() {
@@ -31,11 +33,6 @@ class AjaxCurl extends Connection {
     $profile               = $this->getProfile();
 
     $request               = $this->getAPI3Params($call);
-    // $request['api_key']    = $profile['api_key'];
-    // $request['key']        = $profile['site_key'];
-    // $request['version']    = 3;
-    // $request['entity']     = $call->getEntity();
-    // $request['action']     = $call->getAction();
     $post_data = "entity=" . $call->getEntity();
     $post_data .= "&action=" . $call->getAction();
     $post_data .= "&version=3";
