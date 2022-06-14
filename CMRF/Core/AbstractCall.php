@@ -176,7 +176,7 @@ abstract class AbstractCall implements CallInterface {
   protected function compileRequest($parameters, $options) {
     $request = $parameters;
 
-    $all_options = $options;
+    $all_options = $options ?? [];
     $request['options'] = array();
     foreach ($all_options as $key => $value) {
       if (in_array($key, self::$api_options)) {
