@@ -4,8 +4,23 @@
     "homepage": "https://github.com/CiviMRF/CMRF_Abstract_Core",
     "license": "AGPL-3.0",
     "autoload": {
-        "psr-0" : {
-            "CMRF" : ""
+        "psr-4" : {
+            "CMRF\\" : "CMRF/"
         }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "CMRF\\Tests\\": "tests/"
+        }
+    },
+    "require": {
+        "php": "^7.4 || ^8",
+        "ext-json": "*"
+    },
+    "require-dev": {
+        "phpunit/phpunit": "^8 || ^9"
+    },
+    "suggest": {
+        "ext-curl": "For cURL connection"
     }
 }

@@ -24,6 +24,8 @@ Interface Call {
 
   public function getConnectorID();
 
+  public function getApiVersion(): string;
+
   public function getEntity();
 
   public function getAction();
@@ -77,9 +79,7 @@ Interface Call {
   public function setRetryCount($count);
 
   /**
-   * Executes the callback functions
-   *
-   * @return Execute callbacks
+   * Executes the callback functions.
    */
   public function executeCallbacks();
 
