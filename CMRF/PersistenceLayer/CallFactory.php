@@ -72,12 +72,12 @@ class CallFactory {
 
   public function createOrFetchV3(string $connector_id, Core $core, string $entity, string $action, array $parameters,
     array $options, $callback): Call {
-    return $this->call_construct($connector_id, $core, $entity, $action, $parameters, $options, $callback, '3');
+    return $this->createOrFetch($connector_id, $core, $entity, $action, $parameters, $options, $callback, '3');
   }
 
   public function createOrFetchV4(string $connector_id, Core $core, string $entity, string $action, array $parameters,
     array $options, $callback): Call {
-    return $this->call_construct($connector_id, $core, $entity, $action, $parameters, $options, $callback, '4');
+    return $this->createOrFetch($connector_id, $core, $entity, $action, $parameters, $options, $callback, '4');
   }
 
   public function update(Call $call) {

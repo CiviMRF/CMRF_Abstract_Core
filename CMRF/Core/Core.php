@@ -15,6 +15,11 @@ abstract class Core {
   /** @var CallFactory */
   protected $callfactory;
 
+  public function __construct(CallFactory $factory) {
+    //TODO: implement connection factory to support multiple connection types with a single core implementation.
+    $this->callfactory = $factory;
+  }
+
   /** @return CallFactory */
   public function getFactory() {
     return $this->callfactory;
@@ -59,37 +64,16 @@ abstract class Core {
    * Execute an APIv3 call.
    */
   public function createCallV3(string $connector_id, string $entity, string $action, array $parameters,
-    ?array $options = NULL, $callback = NULL): Call {
-    return $this->callfactory->createOrFetchV3(
-      $connector_id,
-      $this,
-      $entity,
-      $action,
-      $parameters,
-      $options,
-      $callback
-    );
+    array $options = [], $callback = NULL): Call {
+    return $this->createCall($connector_id, $entity, $action, $parameters, $options, $callback, '3');
   }
 
   /**
    * Execute an APIv4 call.
    */
   public function createCallV4(string $connector_id, string $entity, string $action, array $parameters,
-    ?array $options = NULL, $callback = NULL): Call {
-    return $this->callfactory->createOrFetchV4(
-      $connector_id,
-      $this,
-      $entity,
-      $action,
-      $parameters,
-      $options,
-      $callback
-    );
-  }
-
-  public function __construct(CallFactory $factory) {
-    //TODO: implement connection factory to support multiple connection types with a single core implementation.
-    $this->callfactory = $factory;
+    array $options = [], $callback = NULL): Call {
+    return $this->createCall($connector_id, $entity, $action, $parameters, $options, $callback, '4');
   }
 
   public function getCall($call_id) {
