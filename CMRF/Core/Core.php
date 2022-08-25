@@ -37,16 +37,14 @@ abstract class Core {
    * @param string $api_version
    *
    * @return \CMRF\Core\Call
-   *
-   * @deprecated Use createCallV3() or createCallV4() instead.
    */
   public function createCall($connector_id, $entity, $action, $parameters, $options = NULL,
     $callback = NULL/*, string $api_version = '3'*/
   ) {
-    if (6 === func_num_args()) {
+    if (func_num_args() < 7) {
       $api_version = '3';
     } else {
-      $api_version = func_get_arg(6);
+      $api_version = func_get_arg(6) ?? '3';
     }
 
     return $this->callfactory->createOrFetch(
