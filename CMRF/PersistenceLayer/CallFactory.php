@@ -55,16 +55,14 @@ class CallFactory {
 
   /**
    * @return \CMRF\Core\Call
-   *
-   * @deprecated Use createOrFetchV3() or createOrFetchV4() instead.
    */
   public function createOrFetch($connector_id, $core, $entity, $action, $parameters, $options,
     $callback/*, string $api_version = '3'*/
   ) {
-    if (7 === func_num_args()) {
+    if (func_num_args() < 8) {
       $api_version = '3';
     } else {
-      $api_version = func_get_arg(7);
+      $api_version = func_get_arg(7) ?? '3';
     }
 
     return $this->call_construct($connector_id, $core, $entity, $action, $parameters, $options, $callback, $api_version);
