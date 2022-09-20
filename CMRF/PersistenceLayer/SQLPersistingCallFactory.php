@@ -43,6 +43,20 @@ class SQLPersistingCallFactory extends CallFactory {
           'not null' => TRUE,
           'default' => '',
         ),
+        'entity' => array(
+          'description' => 'The CiviCRM API entity',
+          'type' => 'varchar',
+          'length' => 255,
+          'not null' => TRUE,
+          'default' => '',
+        ),
+        'action' => array(
+          'description' => 'The CiviCRM API action',
+          'type' => 'varchar',
+          'length' => 255,
+          'not null' => TRUE,
+          'default' => '',
+        ),
         'request' => array(
           'description' => 'The request data sent',
           'type' => 'text',
@@ -134,11 +148,23 @@ class SQLPersistingCallFactory extends CallFactory {
     }
     /** @var \CMRF\Core\Call $call */
     $call = parent::createOrFetch($connector_id, $core, $entity, $action, $parameters, $options, $callback, $api_version);
-    $stmt = $this->connection->prepare("insert into {$this->table_name}
-             (status,connector_id,request,metadata,request_hash,create_date, scheduled_date)
-      VALUES (?     ,?           ,?      ,?       ,?           ,?           , ?)");
+    $result = $this->connection->query("SHOW COLUMNS FROM {$this->table_name} WHERE field = 'entity' OR field = 'action';");
+    $columns_exist = ($result->num_rows == 2);
+    if ($columns_exist) {
+      $query = "insert into {$this->table_name}
+             (status,connector_id,entity,action,request,metadata,request_hash,create_date,scheduled_date)
+      VALUES (?     ,?           ,?      ,?    ,?      ,?       ,?           ,?          ,?)";
+    }
+    else {
+      $query = "insert into {$this->table_name}
+             (status,connector_id,request,metadata,request_hash,create_date,scheduled_date)
+      VALUES (?     ,?           ,?      ,?       ,?           ,?          ,?)";
+    }
+    $stmt = $this->connection->prepare($query);
     $status = $call->getStatus();
     $connectorID=$call->getConnectorID();
+    $entity=$call->getEntity();
+    $action=$call->getAction();
     $request=json_encode($call->getRequest());
     $metadata=json_encode($call->getMetadata());
     $hash=$call->getHash();
@@ -147,7 +173,12 @@ class SQLPersistingCallFactory extends CallFactory {
     if($call->getScheduledDate() != NULL) {
       $scheduled_date=$call->getScheduledDate()->format('Y-m-d H:i:s');
     }
-    $stmt->bind_param("sssssss",$status,$connectorID,$request,$metadata,$hash,$date, $scheduled_date);
+    if ($columns_exist) {
+      $stmt->bind_param("sssssssss",$status,$connectorID,$entity,$action,$request,$metadata,$hash,$date, $scheduled_date);
+    }
+    else {
+      $stmt->bind_param("sssssss",$status,$connectorID,$request,$metadata,$hash,$date, $scheduled_date);
+    }
     $stmt->execute();
     if ($stmt->errno) {
       throw new \Exception($stmt->error);
