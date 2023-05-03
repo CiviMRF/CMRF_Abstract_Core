@@ -15,7 +15,7 @@ abstract class AbstractCall implements CallInterface {
 
   protected static $api_options  = array('limit', 'offset', 'sort');
   protected static $cmrf_options = array('cache');
-  protected static $protected    = array('action', 'entity');
+  protected static $protected    = array('action', 'entity', 'version');
 
   protected $id           = NULL;
   protected $reply_date = NULL;
@@ -35,43 +35,32 @@ abstract class AbstractCall implements CallInterface {
    */
   protected $callbacks = array();
 
-  public function __construct($core, $connector_id, $factory,$id=NULL) {
+  public function __construct($core, $connector_id, $factory, $id = NULL) {
     $this->factory      = $factory;
     $this->core         = $core;
     $this->connector_id = $connector_id;
     $this->id           = $id;
     $this->date = new \DateTime();
+
+    if ((new \ReflectionMethod($this, 'getApiVersion'))->getDeclaringClass()->getName() === __CLASS__) {
+      trigger_error(
+        sprintf(
+          'Implementation of "getApiVersion" in class "%s" will be removed in next major version',
+          __CLASS__
+        ),
+        \E_USER_DEPRECATED
+      );
+    }
   }
 
-  abstract public function getEntity();
-
-  abstract public function getAction();
-
-  abstract public function getParameters();
-
-  abstract public function getRequest();
-
-  abstract public function getOptions();
-
-  abstract public function getStatus();
-
   /**
-   * Returns the date and time when the call should be processed.
+   * @todo Remove in next major version.
    *
-   * @return \DateTime|null
+   * @return string Always returns "3" for backward compatibility.
    */
-  abstract public function getCachedUntil();
-
-  abstract public function getMetadata();
-
-  abstract public function setStatus($status, $error_message, $error_code);
-
-  abstract public function setReply($data, $newstatus);
-
-  abstract public function getReply();
-
-  abstract public function triggerCallback();
-
+  public function getApiVersion(): string {
+    return '3';
+  }
 
   public function getID() {
     return $this->id;
@@ -107,7 +96,7 @@ abstract class AbstractCall implements CallInterface {
   public static function getHashFromParams($entity, $action, $parameters, $options) {
     $filtered_options = array();
     foreach ($options as $key => $value) {
-      if (in_array($key, self::$api_options)) {
+      if (in_array($key, self::$api_options, TRUE)) {
         $filtered_options[$key] = $value;
       }
     }
@@ -160,9 +149,7 @@ abstract class AbstractCall implements CallInterface {
   }
 
   /**
-   * Executes the callback functions
-   *
-   * @return Execute callbacks
+   * @inheritDoc
    */
   public function executeCallbacks() {
     foreach($this->callbacks as $callback) {
@@ -172,14 +159,13 @@ abstract class AbstractCall implements CallInterface {
     }
   }
 
-
   protected function compileRequest($parameters, $options) {
     $request = $parameters;
 
     $all_options = $options ?? [];
     $request['options'] = array();
     foreach ($all_options as $key => $value) {
-      if (in_array($key, self::$api_options)) {
+      if (in_array($key, self::$api_options, TRUE)) {
         $request['options'][$key] = $value;
       }
     }
@@ -191,13 +177,13 @@ abstract class AbstractCall implements CallInterface {
     // only return the options from the request
     $options = array();
     foreach ($request as $key => $value) {
-      if (in_array($key, self::$api_options)) {
+      if (in_array($key, self::$api_options, TRUE)) {
         $options[$key] = $value;
       }
     }
 
     foreach ($request as $key => $value) {
-      if (in_array($key, self::$cmrf_options)) {
+      if (in_array($key, self::$cmrf_options, TRUE)) {
         $options[$key] = $value;
       }
     }
@@ -207,9 +193,11 @@ abstract class AbstractCall implements CallInterface {
 
   protected function extractParameters($request) {
     // filter out all unwanted fields
-    foreach (self::$api_options as $field_name) {
-      if (isset($request[$field_name])) {
-        unset($request[$field_name]);
+    if ('3' === ($request['version'] ?? '3')) {
+      foreach (self::$api_options as $field_name) {
+        if (isset($request[$field_name])) {
+          unset($request[$field_name]);
+        }
       }
     }
 
