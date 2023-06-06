@@ -132,22 +132,25 @@ class SQLPersistingCallFactory extends CallFactory {
 
   /** @return \CMRF\Core\Call */
   public function createOrFetch($connector_id, $core, $entity, $action, $parameters, $options, $callback, string $api_version = '3') {
-    if(!empty($options['cache'])) {
-      $today = new \DateTime();
-      $today = $today->format('Y-m-d H:i:s');
-      $hash = AbstractCall::getHashFromParams($entity,$action,$parameters,$options);
-      $stmt=$this->connection->prepare("select * from {$this->table_name} where request_hash = ? and connector_id = ? and cached_until > ? limit 1");
-      $stmt->bind_param("sss",$hash,$connector_id, $today);
-      $stmt->execute();
-
-      $result=$stmt->get_result();
-      $dataset=$result->fetch_object();
-      if($dataset != NULL) {
-        return $this->call_load($connector_id,$core,$dataset);
-      }
-    }
     /** @var \CMRF\Core\Call $call */
     $call = parent::createOrFetch($connector_id, $core, $entity, $action, $parameters, $options, $callback, $api_version);
+
+    if (!empty($options['cache'])) {
+      $today = new \DateTime();
+      $today = $today->format('Y-m-d H:i:s');
+      $stmt = $this->connection->prepare(
+        "select * from {$this->table_name} where request_hash = ? and connector_id = ? and cached_until > ? limit 1"
+      );
+      $stmt->bind_param('sss', $call->getHash(), $connector_id, $today);
+      $stmt->execute();
+
+      $result = $stmt->get_result();
+      $dataset = $result->fetch_object();
+      if ($dataset != NULL) {
+        return $this->call_load($connector_id, $core, $dataset);
+      }
+    }
+
     $result = $this->connection->query("SHOW COLUMNS FROM {$this->table_name} WHERE field = 'entity' OR field = 'action';");
     $columns_exist = ($result->num_rows == 2);
     if ($columns_exist) {
