@@ -44,7 +44,7 @@ abstract class AbstractCurlConnection extends Connection {
     $curl = $this->createCurl($call);
 
     $response = curl_exec($curl);
-    if ('' !== curl_error($curl)){
+    if (FALSE === $response || '' !== curl_error($curl)){
       $call->setStatus(Call::STATUS_FAILED, curl_error($curl), curl_errno($curl));
       return NULL;
     } else {
