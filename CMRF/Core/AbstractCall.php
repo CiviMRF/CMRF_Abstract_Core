@@ -210,7 +210,11 @@ abstract class AbstractCall implements CallInterface {
     }
 
     foreach (self::$protected as $field_name) {
-      if (isset($request[$field_name])) {
+      if ($field_name == 'action' && ($request['action'] ?? NULL) != ($this->getAction()) ) {
+        // Some actions may expect an 'action' key in the request parameters (e.g. "validate"),
+        // so don't filter that out if 'action' and '$request['action]' are different
+        continue;
+      } elseif (isset($request[$field_name])) {
         unset($request[$field_name]);
       }
     }
