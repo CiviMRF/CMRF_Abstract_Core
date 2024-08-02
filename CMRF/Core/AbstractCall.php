@@ -88,7 +88,9 @@ abstract class AbstractCall implements CallInterface {
   }
 
   public function getHash() {
-    $request = $this->getRequest();
+    // Include Entity and Action in the request hash to ensure cached dataset retrieval 
+    // actually returns the expected values
+    $request = [ $this->getEntity(), $this->getAction(), $this->getRequest() ];
     self::normaliseArray($request);
     return sha1(json_encode($request));
   }
