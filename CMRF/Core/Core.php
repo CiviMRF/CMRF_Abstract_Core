@@ -25,6 +25,11 @@ abstract class Core {
     return $this->callfactory;
   }
 
+  /**
+   * @param string $connector_id
+   *
+   * @return \CMRF\Core\Connection
+   */
   protected abstract function getConnection($connector_id);
 
   /**
