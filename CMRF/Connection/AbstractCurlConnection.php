@@ -50,7 +50,7 @@ abstract class AbstractCurlConnection extends Connection {
     } else {
       $reply = json_decode($response, TRUE);
       if (!is_array($reply)) {
-        $call->setStatus(Call::STATUS_FAILED, sprintf('JSON error: %s', json_last_error_msg()), json_last_error());
+        $call->setStatus(Call::STATUS_FAILED, sprintf('JSON error: %s response was: %s', json_last_error_msg(), $response), json_last_error());
         return NULL;
       } else {
         $status = Call::STATUS_DONE;
