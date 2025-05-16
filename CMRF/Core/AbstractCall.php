@@ -10,24 +10,22 @@ namespace CMRF\Core;
 
 use CMRF\Core\Call as CallInterface;
 
-
 abstract class AbstractCall implements CallInterface {
-
-  protected static $api_options  = array('limit', 'offset', 'sort');
+  protected static $api_options = array('limit', 'offset', 'sort');
   protected static $cmrf_options = array('cache');
-  protected static $protected    = array('action', 'entity', 'version');
+  protected static $protected = array('action', 'entity', 'version');
 
-  protected $id           = NULL;
+  protected $id = NULL;
   protected $reply_date = NULL;
   protected $scheduled_date = NULL;
   /** @var \DateTime  */
   protected $date = NULL;
   protected $retry_count = 0;
   /** @var \CMRF\Core\Core */
-  protected $core         = NULL;
+  protected $core = NULL;
   protected $connector_id = NULL;
   /** @var \CMRF\PersistenceLayer\CallFactory */
-  protected $factory      = NULL;
+  protected $factory = NULL;
 
   /**
    * @var array
@@ -36,10 +34,10 @@ abstract class AbstractCall implements CallInterface {
   protected $callbacks = array();
 
   public function __construct($core, $connector_id, $factory, $id = NULL) {
-    $this->factory      = $factory;
-    $this->core         = $core;
+    $this->factory = $factory;
+    $this->core = $core;
     $this->connector_id = $connector_id;
-    $this->id           = $id;
+    $this->id = $id;
     $this->date = new \DateTime();
 
     if ((new \ReflectionMethod($this, 'getApiVersion'))->getDeclaringClass()->getName() === __CLASS__) {
@@ -82,15 +80,16 @@ abstract class AbstractCall implements CallInterface {
     $reply = $this->getReply();
     if (isset($reply['values'])) {
       return $reply['values'];
-    } else {
+    }
+    else {
       return array();
     }
   }
 
   public function getHash() {
-    // Include Entity and Action in the request hash to ensure cached dataset retrieval 
+    // Include Entity and Action in the request hash to ensure cached dataset retrieval
     // actually returns the expected values
-    $request = [ $this->getEntity(), $this->getAction(), $this->getRequest() ];
+    $request = [$this->getEntity(), $this->getAction(), $this->getRequest()];
     self::normaliseArray($request);
     return sha1(json_encode($request));
   }
@@ -105,21 +104,19 @@ abstract class AbstractCall implements CallInterface {
 
     $request = $parameters;
     $request['options'] = $filtered_options;
-    $request['entity']  = $entity;
-    $request['action']  = $action;
+    $request['entity'] = $entity;
+    $request['action'] = $action;
     self::normaliseArray($request);
     return sha1(json_encode($request));
   }
 
   /** @return \DateTime */
-  public function getReplyDate()
-  {
+  public function getReplyDate() {
     return $this->reply_date;
   }
 
-  public function setReplyDate(\DateTime $date)
-  {
-    $this->reply_date=$date;
+  public function setReplyDate(\DateTime $date) {
+    $this->reply_date = $date;
   }
 
   /** @return \DateTime */
@@ -140,21 +137,19 @@ abstract class AbstractCall implements CallInterface {
     $this->date = $date;
   }
 
-  public function getRetryCount()
-  {
+  public function getRetryCount() {
     return $this->retry_count;
   }
 
-  public function setRetryCount($count)
-  {
-    $this->retry_count=$count;
+  public function setRetryCount($count) {
+    $this->retry_count = $count;
   }
 
   /**
    * @inheritDoc
    */
   public function executeCallbacks() {
-    foreach($this->callbacks as $callback) {
+    foreach ($this->callbacks as $callback) {
       if (is_callable($callback)) {
         call_user_func($callback, $this);
       }
@@ -164,11 +159,13 @@ abstract class AbstractCall implements CallInterface {
   protected function compileRequest($parameters, $options) {
     $request = $parameters;
 
-    $all_options = $options ?? [];
-    $request['options'] = array();
-    foreach ($all_options as $key => $value) {
-      if (in_array($key, self::$api_options, TRUE)) {
-        $request['options'][$key] = $value;
+    if ("3" === $this->getApiVersion()) {
+      $all_options = $options ?? [];
+      $request['options'] = array();
+      foreach ($all_options as $key => $value) {
+        if (in_array($key, self::$api_options, TRUE)) {
+          $request['options'][$key] = $value;
+        }
       }
     }
 
@@ -194,8 +191,16 @@ abstract class AbstractCall implements CallInterface {
   }
 
   protected function extractParameters($request) {
+    // Default to API version from base class.
+    $api_version = $this->getApiVersion();
+
+    // Fallback for older params that include the version.
+    if (isset($request['version'])) {
+      $api_version = $request['version'];
+    }
+
     // filter out all unwanted fields
-    if ('3' === ($request['version'] ?? '3')) {
+    if ('3' === $api_version) {
       foreach (self::$api_options as $field_name) {
         if (isset($request[$field_name])) {
           unset($request[$field_name]);
@@ -220,11 +225,10 @@ abstract class AbstractCall implements CallInterface {
 
   protected static function normaliseArray(&$array) {
     ksort($array);
-    foreach($array as &$value) {
+    foreach ($array as &$value) {
       if (is_array($value)) {
         self::normaliseArray($value);
       }
     }
   }
 }
-
