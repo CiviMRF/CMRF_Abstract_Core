@@ -30,7 +30,8 @@ class CallFactory {
         E_USER_DEPRECATED
       );
       $api_version = '3';
-    } else {
+    }
+    else {
       $api_version = func_get_arg(7);
     }
 
@@ -50,7 +51,17 @@ class CallFactory {
   }
 
   protected function call_load($connector_id, $core, $record) {
-    return call_user_func_array($this->delegated_loader, [$connector_id, $core, $record, $this]);
+    if (3 === func_num_args()) {
+      trigger_error(
+        sprintf('Calling %s without API version is deprecated', __METHOD__),
+        E_USER_DEPRECATED
+      );
+      $api_version = '3';
+    }
+    else {
+      $api_version = func_get_arg(3);
+    }
+    return call_user_func_array($this->delegated_loader, [$connector_id, $core, $record, $this, $api_version]);
   }
 
   /**
@@ -61,7 +72,8 @@ class CallFactory {
   ) {
     if (func_num_args() < 8) {
       $api_version = '3';
-    } else {
+    }
+    else {
       $api_version = func_get_arg(7) ?? '3';
     }
 
@@ -97,12 +109,12 @@ class CallFactory {
     return array();
   }
 
-  public function loadCall($call_id,$core) {
-    return null;
+  public function loadCall($call_id, $core) {
+    return NULL;
   }
 
-  public function findCall($options,$core) {
-    return null;
+  public function findCall($options, $core) {
+    return NULL;
   }
 
 }
