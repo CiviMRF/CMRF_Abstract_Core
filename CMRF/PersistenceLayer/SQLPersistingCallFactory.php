@@ -72,7 +72,7 @@ class SQLPersistingCallFactory extends CallFactory {
           'not null' => FALSE,
         ),
         'duration' => array(
-          'type' => 'serial',
+          'type' => 'int',
           'unsigned' => TRUE,
           'not null' => TRUE,
           'description' => 'Call Duration',
