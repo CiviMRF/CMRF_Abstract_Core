@@ -43,7 +43,10 @@ abstract class AbstractCurlConnection extends Connection {
   public function executeCall(Call $call) {
     $curl = $this->createCurl($call);
 
+    $start = microtime(TRUE);
     $response = curl_exec($curl);
+    $duration = (int) ((microtime(TRUE) - $start) * 1000);
+    $call->setDuration($duration);
     if (FALSE === $response || '' !== curl_error($curl)){
       $call->setStatus(Call::STATUS_FAILED, curl_error($curl), curl_errno($curl));
       return NULL;

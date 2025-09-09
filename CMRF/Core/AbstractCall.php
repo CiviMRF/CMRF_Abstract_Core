@@ -29,6 +29,8 @@ abstract class AbstractCall implements CallInterface {
   /** @var \CMRF\PersistenceLayer\CallFactory */
   protected $factory      = NULL;
 
+  protected $duration = 0;
+
   /**
    * @var array
    *  Array with callback functions
@@ -51,6 +53,23 @@ abstract class AbstractCall implements CallInterface {
         \E_USER_DEPRECATED
       );
     }
+  }
+
+  /**
+   * Set the duration of the call. (unit is miliseconds).
+   * 
+   * @param int $durationInMS
+   */
+  public function setDuration(int $durationInMS)
+  {
+    $this->duration = $durationInMS;
+  }
+
+  /**
+   * Returns the duration of the call in miliseconds.
+   */
+  public function getDuration(): int {
+    return $this->duration;
   }
 
   /**

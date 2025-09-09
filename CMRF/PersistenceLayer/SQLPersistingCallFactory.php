@@ -71,6 +71,13 @@ class SQLPersistingCallFactory extends CallFactory {
           'serialize' => FALSE,
           'not null' => FALSE,
         ),
+        'duration' => array(
+          'type' => 'serial',
+          'unsigned' => TRUE,
+          'not null' => TRUE,
+          'description' => 'Call Duration',
+          'default' => 0,
+        ),
         'metadata' => array(
           'description' => 'Custom metadata on the request',
           'type' => 'text',
@@ -132,9 +139,14 @@ class SQLPersistingCallFactory extends CallFactory {
 
   /** @return \CMRF\Core\Call */
   public function createOrFetch($connector_id, $core, $entity, $action, $parameters, $options, $callback, string $api_version = '3') {
+    static $_dataCache = [];
+
     /** @var \CMRF\Core\Call $call */
     $call = parent::createOrFetch($connector_id, $core, $entity, $action, $parameters, $options, $callback, $api_version);
 
+    if (isset($_dataCache[$call->getHash()])) {
+      return $_dataCache[$call->getHash()];
+    }
     if (!empty($options['cache'])) {
       $today = new \DateTime();
       $today = $today->format('Y-m-d H:i:s');
@@ -148,22 +160,16 @@ class SQLPersistingCallFactory extends CallFactory {
       $result = $stmt->get_result();
       $dataset = $result->fetch_object();
       if ($dataset != NULL) {
-        return $this->call_load($connector_id, $core, $dataset);
+        $return = $this->call_load($connector_id, $core, $dataset);
+        $_dataCache[$call->getHash()] = $return;
+        return $retun;
       }
     }
 
-    $result = $this->connection->query("SHOW COLUMNS FROM {$this->table_name} WHERE field = 'entity' OR field = 'action';");
-    $columns_exist = ($result->num_rows == 2);
-    if ($columns_exist) {
-      $query = "insert into {$this->table_name}
-             (status,connector_id,entity,action,request,metadata,request_hash,create_date,scheduled_date)
-      VALUES (?     ,?           ,?      ,?    ,?      ,?       ,?           ,?          ,?)";
-    }
-    else {
-      $query = "insert into {$this->table_name}
-             (status,connector_id,request,metadata,request_hash,create_date,scheduled_date)
-      VALUES (?     ,?           ,?      ,?       ,?           ,?          ,?)";
-    }
+    
+    $query = "insert into {$this->table_name}
+            (status,connector_id,entity,action,request,metadata,request_hash,create_date,scheduled_date,duration)
+    VALUES (?     ,?           ,?      ,?    ,?      ,?       ,?           ,?          ,?          ,?)";
     $stmt = $this->connection->prepare($query);
     $status = $call->getStatus();
     $connectorID=$call->getConnectorID();
@@ -174,20 +180,17 @@ class SQLPersistingCallFactory extends CallFactory {
     $hash=$call->getHash();
     $date=date('Y-m-d H:i:s');
     $scheduled_date = NULL;
+    $duration = $call->getDuration();
     if($call->getScheduledDate() != NULL) {
       $scheduled_date=$call->getScheduledDate()->format('Y-m-d H:i:s');
     }
-    if ($columns_exist) {
-      $stmt->bind_param("sssssssss",$status,$connectorID,$entity,$action,$request,$metadata,$hash,$date, $scheduled_date);
-    }
-    else {
-      $stmt->bind_param("sssssss",$status,$connectorID,$request,$metadata,$hash,$date, $scheduled_date);
-    }
+    $stmt->bind_param("sssssssssi",$status,$connectorID,$entity,$action,$request,$metadata,$hash,$date, $scheduled_date, $duration);
     $stmt->execute();
     if ($stmt->errno) {
       throw new \Exception($stmt->error);
     }
     $call->setID($this->connection->insert_id);
+    $_dataCache[$call->getHash()] = $call;
 
     return $call;
   }
@@ -198,7 +201,7 @@ class SQLPersistingCallFactory extends CallFactory {
       throw new \Exception("Unpersisted call given out to update. This won't work.");
     }
     else {
-      $stmt = $this->connection->prepare("update {$this->table_name} set status=?,reply=?,reply_date=?,scheduled_date=?,cached_until=?,retry_count=? where cid=?");
+      $stmt = $this->connection->prepare("update {$this->table_name} set status=?,reply=?,reply_date=?,scheduled_date=?,metadata=?,cached_until=?,retry_count=?,duration=? where cid=?");
       $cache_date=null;
       if ($call->getCachedUntil()) {
         $cache_date=$call->getCachedUntil()->format('Y-m-d H:i:s');
@@ -213,8 +216,10 @@ class SQLPersistingCallFactory extends CallFactory {
       if($call->getScheduledDate() != NULL) {
         $scheduled_date=$call->getScheduledDate()->format('Y-m-d H:i:s');
       }
+      $metadata=json_encode($call->getMetadata());
       $retrycount=$call->getRetryCount();
-      $stmt->bind_param("sssssii",$status,$reply,$reply_date,$scheduled_date,$cache_date,$retrycount,$id);
+      $duration = $call->getDuration();
+      $stmt->bind_param("ssssssiii",$status,$reply,$reply_date,$scheduled_date,$metadata,$cache_date,$retrycount,$duration,$id);
       $stmt->execute();
     }
 

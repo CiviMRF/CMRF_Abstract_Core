@@ -83,5 +83,17 @@ Interface Call {
    */
   public function executeCallbacks();
 
+  /**
+   * Set the duration of the call. (unit is miliseconds).
+   * 
+   * @param int $durationInMS
+   */
+  public function setDuration(int $durationInMS);
+
+  /**
+   * Returns the duration of the call in miliseconds.
+   */
+  public function getDuration(): int;
+
 }
 
