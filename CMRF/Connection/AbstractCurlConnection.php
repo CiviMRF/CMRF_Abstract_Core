@@ -82,6 +82,18 @@ abstract class AbstractCurlConnection extends Connection {
     curl_setopt($curl, CURLOPT_SSL_VERIFYPEER, FALSE);
     curl_setopt($curl, CURLOPT_SSL_VERIFYHOST, FALSE);
 
+    $profile = $this->getProfile();
+    foreach ($profile['curl_options'] ?? [] as $constant => $value) {
+      try {
+        if (NULL !== ($option = @constant($constant))) {
+          curl_setopt($curl, $option, $value);
+        }
+      }
+      catch (\Error $error) {
+        // Ignore invalid cURL options.
+      }
+    }
+
     return $curl;
   }
 
