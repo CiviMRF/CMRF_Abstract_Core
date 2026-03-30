@@ -213,6 +213,7 @@ abstract class AbstractCall implements CallInterface {
   }
 
   protected function extractParameters($request) {
+    $apiVersion = $request['version'] ?? '3';
     // filter out all unwanted fields
     if ('3' === ($request['version'] ?? '3')) {
       foreach (self::$api_options as $field_name) {
@@ -228,7 +229,13 @@ abstract class AbstractCall implements CallInterface {
       }
     }
 
-    foreach (self::$protected as $field_name) {
+    $protected = self::$protected;
+    if ('4' === $apiVersion && $this->getAction() == 'getFields') {
+      // Do not unset the action parameter
+      // because the getFields api expects an action parameter
+      unset($protected[array_search('action', $protected)]);
+    }
+    foreach ($protected as $field_name) {
       if (isset($request[$field_name])) {
         unset($request[$field_name]);
       }
