@@ -162,7 +162,7 @@ class SQLPersistingCallFactory extends CallFactory {
       if ($dataset != NULL) {
         $return = $this->call_load($connector_id, $core, $dataset);
         $_dataCache[$call->getHash()] = $return;
-        return $retun;
+        return $return;
       }
     }
 
