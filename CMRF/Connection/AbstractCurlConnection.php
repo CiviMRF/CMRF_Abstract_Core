@@ -77,6 +77,7 @@ abstract class AbstractCurlConnection extends Connection {
     curl_setopt($curl, CURLOPT_POSTFIELDS, self::postDataToString($this->createPostData($call)));
     curl_setopt($curl, CURLOPT_URL, $this->getUrl($call));
     curl_setopt($curl, CURLOPT_RETURNTRANSFER, TRUE);
+    curl_setopt($curl, CURLOPT_USERAGENT, 'cmrf_abstract_core/1.0');
 
     // @todo Make disabling certificate verification optional
     curl_setopt($curl, CURLOPT_SSL_VERIFYPEER, FALSE);
