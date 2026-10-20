@@ -79,9 +79,12 @@ abstract class AbstractCurlConnection extends Connection {
     curl_setopt($curl, CURLOPT_RETURNTRANSFER, TRUE);
     curl_setopt($curl, CURLOPT_USERAGENT, 'cmrf_abstract_core/1.0');
 
-    // @todo Make disabling certificate verification optional
-    curl_setopt($curl, CURLOPT_SSL_VERIFYPEER, FALSE);
-    curl_setopt($curl, CURLOPT_SSL_VERIFYHOST, FALSE);
+    // Every call carries the API key and the site key, so the server
+    // certificate is verified unless the profile sets 'ssl_verify' to FALSE.
+    // CURLOPT_SSL_VERIFYHOST takes 2 (match the host name) or 0, not a boolean.
+    $verify = (bool) ($this->getProfile()['ssl_verify'] ?? TRUE);
+    curl_setopt($curl, CURLOPT_SSL_VERIFYPEER, $verify);
+    curl_setopt($curl, CURLOPT_SSL_VERIFYHOST, $verify ? 2 : 0);
 
     return $curl;
   }
